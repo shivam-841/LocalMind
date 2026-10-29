@@ -155,4 +155,4 @@ Open <http://localhost:8501> to use the app.
 
 ## License
 
-Add your license here (for example, MIT).
+Distributed under the MIT License. See [LICENSE](LICENSE) for details.
