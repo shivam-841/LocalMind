@@ -1,0 +1,23 @@
+Package Management (pip): Python uses pip to install packages, analogous to vcpkg or conan. We track these dependencies in a requirements.txt file so the environment is reproducible.
+
+Type Hinting: Python is dynamically typed. However, modern Python allows type hints (e.g., def parse(file_path: str) -> str:). This doesn't change runtime behavior, but static analyzers (like your IDE) will catch type errors before you run the code.
+
+Context Managers (with statement): This is Python's version of RAII for resource management. When you open a file using a with block, Python guarantees the file handle is closed when the block exits, even if an exception is thrown.
+
+PyMuPDF (fitz): We are using PyMuPDF because it is extremely fast (written in C) and extracts metadata (like page numbers and bounding boxes) beautifully. Quirky detail: the package is installed as pymupdf, but you import it as fitz due to its historical C-library name (MuPDF's original author was named Fitz).
+
+--------- Chunking data ---------
+1. Concepts to Understand
+Dataclasses (@dataclass): This is Python's equivalent to a C++ struct. It automatically generates boilerplate code (like the __init__ constructor) for classes that primarily hold data.
+
+Generators (yield): Instead of allocating a massive list in memory to hold thousands of chunks (which spikes RAM), Python's yield keyword turns a function into a lazy iterator. It computes and returns one item at a time. Think of it as a simplified version of C++20 coroutines or lazy std::ranges.
+
+Token vs. Character limits: True chunking uses LLM "tokens," but to keep our MVP dependency-light today, we will build a sliding window chunker based on character counts.
+
+--------  Retreival -----------
+Embeddings: An embedding model is a neural network trained to map text to an array of floating-point numbers. We will use all-MiniLM-L6-v2, which maps text to a 384-dimensional vector. It is extremely small (~90 MB) and CPU-optimized.
+
+Vector Database (FAISS): Searching through thousands of 384-dimensional arrays using standard loops in Python would be dreadfully slow. Meta's FAISS (Facebook AI Similarity Search) solves this. FAISS is written purely in C++ and uses AVX SIMD instructions for blazing-fast vector math. We will use its Python bindings to store our vectors and calculate the L2 (Euclidean) distance between them.
+
+Contiguous Memory: FAISS requires NumPy arrays to be stored in contiguous C-order memory blocks as float32. This is an area where Python data types intersect closely with C++ memory layout constraints.
+

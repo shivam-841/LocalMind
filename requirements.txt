@@ -1,0 +1,9 @@
+pymupdf
+sentence-transformers
+faiss-cpu
+--extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
+llama-cpp-python
+huggingface-hub
+streamlit
+pybind11
+fastapi
